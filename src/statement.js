@@ -7,6 +7,13 @@ function statement (invoice, plays) {
     currency: 'USD',
     minimumFractionDigits: 2,
   }).format;
+  ({ volumeCredits, result, totalAmount } = createLineResult(invoice, plays, volumeCredits, result, format, totalAmount));
+  
+  return createResult(result, format, totalAmount, volumeCredits);
+
+}
+
+function createLineResult(invoice, plays, volumeCredits, result, format, totalAmount) {
   for (let performance of invoice.performances) {
     const play = plays[performance.playID];
     let thisAmount = 0;
@@ -16,9 +23,7 @@ function statement (invoice, plays) {
     result += ` ${play.name}: ${format(thisAmount / 100)} (${performance.audience} seats)\n`;
     totalAmount += thisAmount;
   }
-  
-  return createResult(result, format, totalAmount, volumeCredits);
-
+  return { volumeCredits, result, totalAmount };
 }
 
 function headResult(invoice) {
