@@ -19,10 +19,15 @@ function statement (invoice, plays) {
     result += ` ${play.name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
     totalAmount += thisAmount;
   }
+  result = createResult(result, format, totalAmount, volumeCredits);
+  return result;
+
+}
+
+function createResult(result, format, totalAmount, volumeCredits) {
   result += `Amount owed is ${format(totalAmount / 100)}\n`;
   result += `You earned ${volumeCredits} credits \n`;
   return result;
-
 }
 
 function calculateAmount(play, thisAmount, perf) {
