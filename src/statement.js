@@ -1,7 +1,7 @@
 function statement (invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
-  let result = `Statement for ${invoice.customer}\n`;
+  let result = headResult(invoice);
   const format = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -19,6 +19,10 @@ function statement (invoice, plays) {
   
   return createResult(result, format, totalAmount, volumeCredits);
 
+}
+
+function headResult(invoice) {
+  return `Statement for ${invoice.customer}\n`;
 }
 
 function calculateCredits(volumeCredits, perf, play) {
