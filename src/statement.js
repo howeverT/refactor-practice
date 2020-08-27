@@ -1,13 +1,21 @@
 function statement (invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
-  let result = headResult(invoice);
+  let result=``;
   const format = formatMoneytoUS();
-  ({ volumeCredits, result, totalAmount } = createLineResult(invoice, plays, volumeCredits, result, format, totalAmount));
+  ({ volumeCredits, totalAmount } = createResult(invoice, plays, volumeCredits, totalAmount));
   
-  return createResult(result, format, totalAmount, volumeCredits);
+  return printResult(headResult(invoice),createTxtLine(invoice, plays, result, format),totalAmount,volumeCredits,format)
 
 }
+
+function printResult(head,lineData,totalAmount,volumeCredits,format) {
+    return head+`\n`+
+          lineData
+          +`Amount owed is ${format(totalAmount / 100)}\n`
+          +`You earned ${volumeCredits} credits \n`
+}
+
 
 function formatMoneytoUS() {
   return new Intl.NumberFormat('en-US', {
@@ -17,36 +25,36 @@ function formatMoneytoUS() {
   }).format;
 }
 
-function createLineResult(invoice, plays, volumeCredits, result, format, totalAmount) {
+function createTxtLine(invoice, plays, result, format) {
+  for (let performance of invoice.performances) {
+    const play = plays[performance.playID];
+    let thisAmount = 0;
+    thisAmount = calculateAmount(play, thisAmount, performance);
+    result += ` ${play.name}: ${format(thisAmount / 100)} (${performance.audience} seats)\n`;
+  }
+  return result;
+}
+
+function createResult(invoice, plays, volumeCredits, totalAmount) {
   for (let performance of invoice.performances) {
     const play = plays[performance.playID];
     let thisAmount = 0;
     thisAmount = calculateAmount(play, thisAmount, performance);
     volumeCredits = calculateCredits(volumeCredits, performance, play);
-    //print line for this order
-    result += ` ${play.name}: ${format(thisAmount / 100)} (${performance.audience} seats)\n`;
     totalAmount += thisAmount;
   }
-  return { volumeCredits, result, totalAmount };
+  return { volumeCredits, totalAmount };
 }
 
 function headResult(invoice) {
-  return `Statement for ${invoice.customer}\n`;
+  return `Statement for ${invoice.customer}`;
 }
 
 function calculateCredits(volumeCredits, perf, play) {
-  // add volume credits
   volumeCredits += Math.max(perf.audience - 30, 0);
-  // add extra credit for every ten comedy attendees
   if ('comedy' === play.type)
     volumeCredits += Math.floor(perf.audience / 5);
   return volumeCredits;
-}
-
-function createResult(result, format, totalAmount, volumeCredits) {
-  result += `Amount owed is ${format(totalAmount / 100)}\n`;
-  result += `You earned ${volumeCredits} credits \n`;
-  return result;
 }
 
 function calculateAmount(play, thisAmount, performance) {
