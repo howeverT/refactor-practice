@@ -7,13 +7,13 @@ function statement (invoice, plays) {
     currency: 'USD',
     minimumFractionDigits: 2,
   }).format;
-  for (let perf of invoice.performances) {
-    const play = plays[perf.playID];
+  for (let performance of invoice.performances) {
+    const play = plays[performance.playID];
     let thisAmount = 0;
-    thisAmount = calculateAmount(play, thisAmount, perf);
-    volumeCredits = calculateCredits(volumeCredits, perf, play);
+    thisAmount = calculateAmount(play, thisAmount, performance);
+    volumeCredits = calculateCredits(volumeCredits, performance, play);
     //print line for this order
-    result += ` ${play.name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
+    result += ` ${play.name}: ${format(thisAmount / 100)} (${performance.audience} seats)\n`;
     totalAmount += thisAmount;
   }
   result = createResult(result, format, totalAmount, volumeCredits);
