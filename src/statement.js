@@ -9,6 +9,24 @@ function statement (invoice, plays) {
 
 }
 
+function statementHTML (invoice, plays) {
+  let totalAmount = 0;
+  let volumeCredits = 0;
+  let result=``;
+  const format = formatMoneytoUS();
+  ({ volumeCredits, totalAmount } = createResult(invoice, plays, volumeCredits, totalAmount));
+  
+  return printHTMLResult(headResult(invoice),createHTMLLine(invoice, plays, result, format),totalAmount,volumeCredits,format)
+
+}
+
+function printHTMLResult(head,lineData,totalAmount,volumeCredits,format) {
+  return `<h1>`+head+`</h1>\n<table>\n<tr><th>play</th><th>seats</th><th>cost</th></tr>`
+        +lineData+`</table>\n`
+        +`<p>Amount owed is <em>${format(totalAmount / 100)}</em></p>\n`
+        +`<p>You earned <em>${volumeCredits}</em> credits</p>\n`
+}
+
 function printResult(head,lineData,totalAmount,volumeCredits,format) {
     return head+`\n`+
           lineData
@@ -31,6 +49,16 @@ function createTxtLine(invoice, plays, result, format) {
     let thisAmount = 0;
     thisAmount = calculateAmount(play, thisAmount, performance);
     result += ` ${play.name}: ${format(thisAmount / 100)} (${performance.audience} seats)\n`;
+  }
+  return result;
+}
+
+function createHTMLLine(invoice, plays, result, format) {
+  for (let performance of invoice.performances) {
+    const play = plays[performance.playID];
+    let thisAmount = 0;
+    thisAmount = calculateAmount(play, thisAmount, performance);
+    result += ` <tr><td>${play.name}</td><td>${performance.audience}</td><td>${format(thisAmount / 100)}</td></tr>\n`;
   }
   return result;
 }
@@ -80,4 +108,5 @@ function calculateAmount(play, thisAmount, performance) {
 
 module.exports = {
   statement,
+  statementHTML
 };
