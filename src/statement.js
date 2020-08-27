@@ -2,15 +2,19 @@ function statement (invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = headResult(invoice);
-  const format = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format;
+  const format = formatMoneytoUS();
   ({ volumeCredits, result, totalAmount } = createLineResult(invoice, plays, volumeCredits, result, format, totalAmount));
   
   return createResult(result, format, totalAmount, volumeCredits);
 
+}
+
+function formatMoneytoUS() {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  }).format;
 }
 
 function createLineResult(invoice, plays, volumeCredits, result, format, totalAmount) {
