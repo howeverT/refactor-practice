@@ -11,10 +11,7 @@ function statement (invoice, plays) {
     const play = plays[perf.playID];
     let thisAmount = 0;
     thisAmount = calculateAmount(play, thisAmount, perf);
-    // add volume credits
-    volumeCredits += Math.max(perf.audience - 30, 0);
-    // add extra credit for every ten comedy attendees
-    if ('comedy' === play.type) volumeCredits += Math.floor(perf.audience / 5);
+    volumeCredits = calculateCredits(volumeCredits, perf, play);
     //print line for this order
     result += ` ${play.name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
     totalAmount += thisAmount;
@@ -22,6 +19,15 @@ function statement (invoice, plays) {
   result = createResult(result, format, totalAmount, volumeCredits);
   return result;
 
+}
+
+function calculateCredits(volumeCredits, perf, play) {
+  // add volume credits
+  volumeCredits += Math.max(perf.audience - 30, 0);
+  // add extra credit for every ten comedy attendees
+  if ('comedy' === play.type)
+    volumeCredits += Math.floor(perf.audience / 5);
+  return volumeCredits;
 }
 
 function createResult(result, format, totalAmount, volumeCredits) {
